@@ -25,7 +25,7 @@ defmodule Mix.Tasks.Git.Tags.Create do
   end
 
   defp tag() do
-    {:ok, version} = :application.get_key(:sci, :vsn)
+    {:ok, version} = :application.get_key(:gestalt, :vsn)
     "v#{version}"
   end
 
