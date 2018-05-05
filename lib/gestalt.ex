@@ -47,11 +47,13 @@ defmodule Gestalt do
 
       _ ->
         Agent.update(agent, fn state ->
-          overrides =
-            (get_in(state, [pid, :configuration]) || %{})
-            |> Util.Map.deep_merge(%{module => %{key => value}})
+          update_map = %{module => %{key => value}}
 
-          Map.put(state, pid, configuration: overrides)
+          overrides =
+            (get_in(state, [pid]) || [configuration: %{}])
+            |> Keyword.update(:configuration, update_map, &Util.Map.deep_merge(&1, update_map))
+
+          Map.put(state, pid, overrides)
         end)
     end
   end
@@ -68,10 +70,10 @@ defmodule Gestalt do
       _ ->
         Agent.update(agent, fn state ->
           overrides =
-            (get_in(state, [pid, :env]) || %{})
-            |> Map.put(variable, value)
+            (get_in(state, [pid]) || [env: %{}])
+            |> Keyword.update(:env, %{variable => value}, &Map.put(&1, variable, value))
 
-          Map.put(state, pid, env: overrides)
+          Map.put(state, pid, overrides)
         end)
     end
   end
@@ -84,18 +86,18 @@ defmodule Gestalt do
 
   defp get_agent_config(agent, caller_pid, module, key) do
     Agent.get(agent, fn state ->
-      case state[caller_pid] do
+      case get_in(state, [caller_pid, :configuration]) do
         nil -> Application.get_env(module, key)
-        _ -> get_in(state, [caller_pid, :configuration, module, key])
+        override -> get_in(override, [module, key])
       end
     end)
   end
 
   defp get_agent_env(agent, caller_pid, variable) when is_binary(variable) do
     Agent.get(agent, fn state ->
-      case state[caller_pid] do
+      case get_in(state, [caller_pid, :env]) do
         nil -> System.get_env(variable)
-        _ -> get_in(state, [caller_pid, :env, variable])
+        override -> override[variable]
       end
     end)
   end
