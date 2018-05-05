@@ -1,10 +1,69 @@
 defmodule Gestalt do
   @moduledoc """
-  Documentation for Gestalt.
+  Provides a wrapper for `Application.get_env` and `System.get_env`, where configuration
+  can be overridden on a per-process basis. This allows asynchronous tests to change
+  configuration on the fly without altering global state for other tests.
+
+
+  ## Usage
+
+  In `test_helper.exs`, add the following:
+
+      {:ok, _} = Gestalt.start()
+
+  In runtime code, where one would use `Application.get_env`, instead the following could
+  be used:
+
+      value = Application.get_env(:my_module, :my_config)
+      value = Gestalt.get_config(:my_module, :my_config, self())
+
+  In runtime code, where one would use `System.get_env`, instead the following could
+  be used:
+
+      value = System.get_env("VARIABLE_NAME")
+      value = Gestalt.get_env("VARIABLE_NAME", self())
+
+
+  ## Overriding values in tests
+
+  The value of Gestalt comes from its ability to change configuration and/or environment
+  in a way that only effects the current process. For instance, if code behaves differently
+  depending on configuration, then a test that uses `Application.put_env/4` to test its
+  effect will change global state for other asynchronously-running tests.
+
+  To change Application configuration, use the following:
+
+      Gestalt.replace_config(:my_module, :my_value, "some value", self())
+
+  To change System environment, use the following:
+
+      Gestalt.replace_env("VARIABLE_NAME", "some value", self())
+
+
+  ## Caveats
+
+  Gestalt does not try to be too smart about merging overrides with existing configuration.
+  If an override is set for the current pid, then all config and env values required by the
+  runtime code must be specifically set.
+
+  Also, note that Gestalt is a runtime configuration library. Values used by module variables
+  are evaluated at compile time, not at runtime.
+
   """
 
   alias Gestalt.Util
 
+  @doc ~S"""
+  Starts an agent for storing override values. If an agent is already running, it
+  is returned.
+
+  ## Examples
+
+      iex> {:ok, pid} = Gestalt.start()
+      iex> is_pid(pid)
+      true
+
+  """
   def start(agent \\ __MODULE__) do
     case GenServer.whereis(agent) do
       nil -> Agent.start_link(fn -> %{} end, name: agent)
@@ -12,6 +71,21 @@ defmodule Gestalt do
     end
   end
 
+  @doc ~S"""
+  Gets configuration either from Application, or from the running agent.
+
+  ## Examples
+
+      iex> {:ok, _pid} = Gestalt.start()
+      iex> Application.put_env(:module_name, :key_name, true)
+      iex> Gestalt.get_config(:module_name, :key_name, self())
+      true
+      iex> Gestalt.replace_config(:module_name, :key_name, false, self())
+      :ok
+      iex> Gestalt.get_config(:module_name, :key_name, self())
+      false
+
+  """
   def get_config(_module, _key, _pid, _agent \\ __MODULE__)
 
   def get_config(module, key, pid, agent) when is_pid(pid) do
@@ -23,6 +97,21 @@ defmodule Gestalt do
 
   def get_config(_module, _key, _pid, _agent), do: raise("get_config/3 must receive a pid")
 
+  @doc ~S"""
+  Gets environment variables either from System, or from the running agent.
+
+  ## Examples
+
+      iex> {:ok, _pid} = Gestalt.start()
+      iex> System.put_env("VARIABLE_FROM_ENV", "value set from env")
+      iex> Gestalt.get_env("VARIABLE_FROM_ENV", self())
+      "value set from env"
+      iex> Gestalt.replace_env("VARIABLE_FROM_ENV", "no longer from env", self())
+      :ok
+      iex> Gestalt.get_env("VARIABLE_FROM_ENV", self())
+      "no longer from env"
+
+  """
   def get_env(_varibale, _pid, _agent \\ __MODULE__)
 
   def get_env(variable, pid, agent) when is_pid(pid) do
