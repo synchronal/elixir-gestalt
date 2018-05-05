@@ -3,6 +3,8 @@ defmodule Gestalt do
   Documentation for Gestalt.
   """
 
+  alias Gestalt.Util
+
   def start(agent \\ __MODULE__) do
     case GenServer.whereis(agent) do
       nil -> Agent.start_link(fn -> %{} end, name: agent)
@@ -45,7 +47,11 @@ defmodule Gestalt do
 
       _ ->
         Agent.update(agent, fn state ->
-          Map.put(state, pid, configuration: %{module => %{key => value}})
+          overrides =
+            (get_in(state, [pid, :configuration]) || %{})
+            |> Util.Map.deep_merge(%{module => %{key => value}})
+
+          Map.put(state, pid, configuration: overrides)
         end)
     end
   end
@@ -61,7 +67,11 @@ defmodule Gestalt do
 
       _ ->
         Agent.update(agent, fn state ->
-          Map.put(state, pid, env: %{variable => value})
+          overrides =
+            (get_in(state, [pid, :env]) || %{})
+            |> Map.put(variable, value)
+
+          Map.put(state, pid, env: overrides)
         end)
     end
   end

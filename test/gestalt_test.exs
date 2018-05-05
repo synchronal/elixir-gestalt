@@ -173,13 +173,66 @@ defmodule GestaltTest do
       end
     end
 
-    test "updates the agent when it is running" do
+    test "adds to a running agent" do
       pid = self()
       {:ok, agent} = Gestalt.start(:replace_config)
 
       assert Agent.get(:replace_config, fn state -> state end) == %{}
       Gestalt.replace_config(:gestalt, :key, true, pid, :replace_config)
       assert Agent.get(:replace_config, fn state -> state end) == %{pid => [configuration: %{gestalt: %{key: true}}]}
+
+      Agent.stop(agent)
+    end
+
+    test "merges into a running agent with overrides" do
+      pid = self()
+
+      {:ok, agent} =
+        Agent.start_link(
+          fn ->
+            %{pid => [configuration: %{gestalt: %{key: true}}]}
+          end,
+          name: :merge_config
+        )
+
+      assert Agent.get(:merge_config, fn state -> state end) == %{pid => [configuration: %{gestalt: %{key: true}}]}
+      Gestalt.replace_config(:gestalt, :override, "yay", pid, :merge_config)
+      Gestalt.replace_config(:other, :thing, "nay", pid, :merge_config)
+
+      assert Agent.get(:merge_config, fn state -> state end) == %{
+               pid => [
+                 configuration: %{
+                   gestalt: %{key: true, override: "yay"},
+                   other: %{thing: "nay"}
+                 }
+               ]
+             }
+
+      Agent.stop(agent)
+    end
+
+    test "does not merge keyword lists" do
+      pid = self()
+
+      {:ok, agent} =
+        Agent.start_link(
+          fn ->
+            %{pid => [configuration: %{gestalt: %{key: [with: "some", value: "list"]}}]}
+          end,
+          name: :merge_config_lists
+        )
+
+      assert Agent.get(:merge_config_lists, fn state -> state end) == %{pid => [configuration: %{gestalt: %{key: [with: "some", value: "list"]}}]}
+
+      Gestalt.replace_config(:gestalt, :key, [a: "different", keyword: "list"], pid, :merge_config_lists)
+
+      assert Agent.get(:merge_config_lists, fn state -> state end) == %{
+               pid => [
+                 configuration: %{
+                   gestalt: %{key: [a: "different", keyword: "list"]}
+                 }
+               ]
+             }
 
       Agent.stop(agent)
     end
@@ -200,13 +253,39 @@ defmodule GestaltTest do
       end
     end
 
-    test "updates the agent when it is running" do
+    test "adds to a running agent" do
       pid = self()
       {:ok, agent} = Gestalt.start(:replace_env)
 
       assert Agent.get(:replace_env, fn state -> state end) == %{}
       Gestalt.replace_env("REPLACING_VARIABLE", "overridden value", pid, :replace_env)
       assert Agent.get(:replace_env, fn state -> state end) == %{pid => [env: %{"REPLACING_VARIABLE" => "overridden value"}]}
+
+      Agent.stop(agent)
+    end
+
+    test "merges into a running agent with overrides" do
+      pid = self()
+
+      {:ok, agent} =
+        Agent.start_link(
+          fn ->
+            %{pid => [env: %{"EXISTING_OVERRIDE" => "something"}]}
+          end,
+          name: :merge_env
+        )
+
+      assert Agent.get(:merge_env, fn state -> state end) == %{pid => [env: %{"EXISTING_OVERRIDE" => "something"}]}
+      Gestalt.replace_env("REPLACING_VARIABLE", "overridden value", pid, :merge_env)
+
+      assert Agent.get(:merge_env, fn state -> state end) == %{
+               pid => [
+                 env: %{
+                   "EXISTING_OVERRIDE" => "something",
+                   "REPLACING_VARIABLE" => "overridden value"
+                 }
+               ]
+             }
 
       Agent.stop(agent)
     end
