@@ -112,7 +112,7 @@ defmodule Gestalt do
       "no longer from env"
 
   """
-  def get_env(_varibale, _pid, _agent \\ __MODULE__)
+  def get_env(_variable, _pid, _agent \\ __MODULE__)
 
   def get_env(variable, pid, agent) when is_pid(pid) do
     case GenServer.whereis(agent) do
@@ -149,7 +149,7 @@ defmodule Gestalt do
 
   def replace_config(_module, _key, _value, _pid, _agent), do: raise("replace_config/4 must receive a pid")
 
-  def replace_env(_varibale, _value, _pid, _agent \\ __MODULE__)
+  def replace_env(_variable, _value, _pid, _agent \\ __MODULE__)
 
   def replace_env(variable, value, pid, agent) when is_pid(pid) do
     case GenServer.whereis(agent) do
