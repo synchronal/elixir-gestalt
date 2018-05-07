@@ -11,16 +11,20 @@ defmodule Gestalt do
 
       {:ok, _} = Gestalt.start()
 
-  In runtime code, where one would use `Application.get_env`, instead the following could
-  be used:
+  In runtime code, where one would use `Application.get_env`,
 
       value = Application.get_env(:my_module, :my_config)
+
+  instead the following could be used:
+
       value = Gestalt.get_config(:my_module, :my_config, self())
 
-  In runtime code, where one would use `System.get_env`, instead the following could
-  be used:
+  In runtime code, where one would use `System.get_env`,
 
       value = System.get_env("VARIABLE_NAME")
+
+  instead the following could be used:
+
       value = Gestalt.get_env("VARIABLE_NAME", self())
 
 
@@ -28,7 +32,7 @@ defmodule Gestalt do
 
   The value of Gestalt comes from its ability to change configuration and/or environment
   in a way that only effects the current process. For instance, if code behaves differently
-  depending on configuration, then a test that uses `Application.put_env/4` to test its
+  depending on configuration, then a test that uses `Application.put_env/4` to verify its
   effect will change global state for other asynchronously-running tests.
 
   To change Application configuration, use the following:

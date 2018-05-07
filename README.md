@@ -1,6 +1,8 @@
 Gestalt
 =======
 
+`Configuration` → `Form` → `Gestalt`
+
 A wrapper for `Application.get_config` and `System.get_env` that makes it easy
 to swap in process-specific overrides. Among other things, this allows tests
 to provide async-safe overrides.
