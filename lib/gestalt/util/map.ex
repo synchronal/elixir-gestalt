@@ -1,4 +1,6 @@
 defmodule Gestalt.Util.Map do
+  @moduledoc false
+
   def deep_merge(left, right) do
     Elixir.Map.merge(left, right, &deep_resolve/3)
   end

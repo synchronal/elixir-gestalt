@@ -1,4 +1,6 @@
 defmodule Mix.Tasks.Git.Tags.Create do
+  @moduledoc false
+
   use Mix.Task
 
   @shortdoc "Creates a git tag"

@@ -1,6 +1,6 @@
 defmodule Gestalt do
   @moduledoc """
-  Provides a wrapper for `Application.get_env` and `System.get_env`, where configuration
+  Provides a wrapper for `Application.get_env/3` and `System.get_env/1`, where configuration
   can be overridden on a per-process basis. This allows asynchronous tests to change
   configuration on the fly without altering global state for other tests.
 
@@ -11,7 +11,7 @@ defmodule Gestalt do
 
       {:ok, _} = Gestalt.start()
 
-  In runtime code, where one would use `Application.get_env`,
+  In runtime code, where one would use `Application.get_env/3`,
 
       value = Application.get_env(:my_module, :my_config)
 
@@ -19,7 +19,7 @@ defmodule Gestalt do
 
       value = Gestalt.get_config(:my_module, :my_config, self())
 
-  In runtime code, where one would use `System.get_env`,
+  In runtime code, where one would use `System.get_env/1`,
 
       value = System.get_env("VARIABLE_NAME")
 

@@ -34,7 +34,7 @@ defmodule Gestalt.MixProject do
 
   defp description() do
     """
-    A wrapper for `Application.get_config` and `System.get_env` that makes it easy
+    A wrapper for `Application.get_config/3` and `System.get_env/1` that makes it easy
     to swap in process-specific overrides. Among other things, this allows tests
     to provide async-safe overrides.
     """
