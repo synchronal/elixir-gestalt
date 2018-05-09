@@ -1,17 +1,24 @@
 defmodule Gestalt.MixProject do
   use Mix.Project
 
+  @version "0.1.2"
+
   def project do
     [
       aliases: aliases(),
       app: :gestalt,
       deps: deps(),
       description: description(),
+      docs: [
+        extras: extras(),
+        source_ref: "v#{@version}",
+        main: "overview"
+      ],
       elixir: "~> 1.6",
       package: package(),
       source_url: "https://github.com/sparta-science/elixir-gestalt",
       start_permanent: Mix.env() == :prod,
-      version: "0.1.2"
+      version: @version
     ]
   end
 
@@ -38,6 +45,12 @@ defmodule Gestalt.MixProject do
     to swap in process-specific overrides. Among other things, this allows tests
     to provide async-safe overrides.
     """
+  end
+
+  defp extras() do
+    [
+      "pages/overview.md"
+    ]
   end
 
   defp package() do

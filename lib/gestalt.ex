@@ -66,6 +66,9 @@ defmodule Gestalt do
       iex> {:ok, pid} = Gestalt.start()
       iex> is_pid(pid)
       true
+      iex> {:ok, other_pid} = Gestalt.start()
+      iex> pid == other_pid
+      true
 
   """
   def start(agent \\ __MODULE__) do
@@ -131,6 +134,9 @@ defmodule Gestalt do
   ## Modify state
   ##############################
 
+  @doc ~S"""
+  Sets an override for the provided pid, effecting the behavior of `get_config/4`.
+  """
   def replace_config(_module, _key, _value, _pid, _agent \\ __MODULE__)
 
   def replace_config(module, key, value, pid, agent) when is_pid(pid) do
@@ -153,6 +159,9 @@ defmodule Gestalt do
 
   def replace_config(_module, _key, _value, _pid, _agent), do: raise("replace_config/4 must receive a pid")
 
+  @doc ~S"""
+  Sets an override for the provided pid, effecting the behavior of `get_env/3`.
+  """
   def replace_env(_variable, _value, _pid, _agent \\ __MODULE__)
 
   def replace_env(variable, value, pid, agent) when is_pid(pid) do
