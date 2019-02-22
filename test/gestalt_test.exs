@@ -184,6 +184,21 @@ defmodule GestaltTest do
       Agent.stop(agent)
     end
 
+    test "handles multiple overrides for the same module" do
+      pid = self()
+      {:ok, agent} = Gestalt.start(:multiple_overrides)
+
+      Gestalt.replace_config(:some, :stuff, [host: "here"], pid, :multiple_overrides)
+      Gestalt.replace_config(:some, :thing, "yay", pid, :multiple_overrides)
+      Gestalt.replace_config(:some, :other_thing, "nay", pid, :multiple_overrides)
+
+      assert Gestalt.get_config(:some, :other_thing, pid, :multiple_overrides) == "nay"
+      assert Gestalt.get_config(:some, :thing, pid, :multiple_overrides) == "yay"
+      assert Gestalt.get_config(:some, :stuff, pid, :multiple_overrides) == [host: "here"]
+
+      Agent.stop(agent)
+    end
+
     test "merges into a running agent with overrides" do
       pid = self()
 
