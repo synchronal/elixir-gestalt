@@ -158,12 +158,12 @@ defmodule Project.ConfigTest do
 
   describe "enable_monitoring_lib?/0" do
     test "when AUTH_TOKEN is present, it is true" do
-      :ok = Gestalt.put_env("AUTH_TOKEN", "abc123", self())
+      :ok = Gestalt.replace_env("AUTH_TOKEN", "abc123", self())
       assert Config.enable_monitoring_lib?()
     end
 
     test "when AUTH_TOKEN is not present, it is false" do
-      :ok = Gestalt.put_env("AUTH_TOKEN", nil, self())
+      :ok = Gestalt.replace_env("AUTH_TOKEN", nil, self())
       refute Config.enable_monitoring_lib?()
     end
   end
