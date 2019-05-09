@@ -6,6 +6,11 @@ jobs:
     steps:
       - checkout
       - run:
+          name: Setup elixir
+          command: |
+            mix local.hex --force
+            mix local.rebar --force
+      - run:
           name: Get dependencies
           command: mix deps.get
       - run:
