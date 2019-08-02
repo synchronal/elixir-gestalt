@@ -1,7 +1,7 @@
 defmodule Gestalt.MixProject do
   use Mix.Project
 
-  @version "0.1.5"
+  @version "0.2.0"
 
   def project do
     [
@@ -36,7 +36,7 @@ defmodule Gestalt.MixProject do
   defp deps do
     [
       {:ex_doc, ">= 0.0.0", only: :dev},
-      {:junit_formatter, ">= 0.0.0", only: :test},
+      {:junit_formatter, ">= 0.0.0", only: :test}
     ]
   end
 

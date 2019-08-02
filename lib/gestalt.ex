@@ -57,6 +57,12 @@ defmodule Gestalt do
 
   alias Gestalt.Util
 
+  defmacro __using__(_) do
+    quote do
+      import Gestalt.Macros
+    end
+  end
+
   @doc ~S"""
   Starts an agent for storing override values. If an agent is already running, it
   is returned.

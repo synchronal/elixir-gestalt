@@ -180,3 +180,30 @@ which case `replace_config` and `replace_env` should use the pid of the running 
 Gestalt can be used to override values in the runtime. A common pattern in Elixir dependency injection is to use
 application config to set module variables. This happens at compile time, making it impossible for Gestalt to
 provide overrides.
+
+
+## Gestalt macros for testing
+
+For cases where runtime configuration should only be overridden during testing, Gestalt provides macros that compile
+to `Application` and `System` in non-test environments.
+
+```elixir
+defmodule Project.Config do
+  use Gestalt
+
+  def enable_new_feature? do
+    gestalt_config(:my_project, :enable_new_feature, self())
+  end
+
+  def enable_monitoring_lib? do
+    case monitoring_auth_token do
+      nil -> false
+      _ -> true
+    end
+  end
+
+  def monitoring_auth_token do
+    gestalt_env("AUTH_TOKEN", self())
+  end
+end
+``` 
