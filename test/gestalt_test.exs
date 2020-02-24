@@ -369,13 +369,11 @@ defmodule GestaltTest do
       end
     end
 
-    test "raises when no overrides exist for the source pid" do
-      pid = self()
+    test "does nothing when no overrides exist for the source pid" do
       {:ok, agent} = Agent.start_link(fn -> %{} end, name: :copy_env_without_overrides)
 
-      assert_raise RuntimeError, "copy/2 expected overrides for pid: #{inspect(pid)}, but none found", fn ->
-        Gestalt.copy(pid, :erlang.list_to_pid('<0.1.0>'), :copy_env_without_overrides)
-      end
+      Gestalt.copy(self(), :erlang.list_to_pid('<0.1.0>'), :copy_env_without_overrides)
+      assert Agent.get(:copy_env_without_overrides, fn state -> state end) == %{}
 
       Agent.stop(agent)
     end
@@ -389,6 +387,51 @@ defmodule GestaltTest do
 
       other_pid = :erlang.list_to_pid('<0.1.0>')
       Gestalt.copy(pid, other_pid, :copy_env)
+
+      assert Agent.get(:copy_env, fn state -> state end) == %{
+               pid => [
+                 env: %{"ENV_VAR" => "overridden value"},
+                 configuration: %{something: %{key: true}}
+               ],
+               other_pid => [
+                 env: %{"ENV_VAR" => "overridden value"},
+                 configuration: %{something: %{key: true}}
+               ]
+             }
+
+      Agent.stop(agent)
+    end
+  end
+
+  describe "copy!/2" do
+    test "raises when no agent has been started" do
+      refute GenServer.whereis(:copy_env_no_agent)
+
+      assert_raise RuntimeError, "agent not started, please call start() before changing state", fn ->
+        Gestalt.copy!(self(), :erlang.list_to_pid('<0.1.0>'), :copy_env_no_agent)
+      end
+    end
+
+    test "raises when no overrides exist for the source pid" do
+      pid = self()
+      {:ok, agent} = Agent.start_link(fn -> %{} end, name: :copy_env_without_overrides)
+
+      assert_raise RuntimeError, "copy!/2 expected overrides for pid: #{inspect(pid)}, but none found", fn ->
+        Gestalt.copy!(pid, :erlang.list_to_pid('<0.1.0>'), :copy_env_without_overrides)
+      end
+
+      Agent.stop(agent)
+    end
+
+    test "copies overrides to another pid" do
+      pid = self()
+      {:ok, agent} = Agent.start_link(fn -> %{} end, name: :copy_env)
+
+      Gestalt.replace_env("ENV_VAR", "overridden value", self(), :copy_env)
+      Gestalt.replace_config(:something, :key, true, self(), :copy_env)
+
+      other_pid = :erlang.list_to_pid('<0.1.0>')
+      Gestalt.copy!(pid, other_pid, :copy_env)
 
       assert Agent.get(:copy_env, fn state -> state end) == %{
                pid => [

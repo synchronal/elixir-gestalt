@@ -85,7 +85,8 @@ defmodule Gestalt do
   end
 
   @doc ~S"""
-  Copy Gestalt overrides from one pid to another.
+  Copies Gestalt overrides from one pid to another. If no overrides have been defined,
+  returns `nil`.
   """
   def copy(from_pid, to_pid, agent \\ __MODULE__)
 
@@ -96,12 +97,25 @@ defmodule Gestalt do
 
       _ ->
         Agent.get_and_update(agent, fn state ->
-          overrides = get_in(state, [from_pid])
-          {overrides, state |> Map.put(to_pid, overrides)}
+          get_in(state, [from_pid])
+          |> case do
+            nil -> {nil, state}
+            overrides -> {overrides, state |> Map.put(to_pid, overrides)}
+          end
         end)
     end
+  end
+
+  @doc ~S"""
+  Copies Gestalt overrides from one pid to another. If no overrides have been defined,
+  raises a RuntimeError.
+  """
+  def copy!(from_pid, to_pid, agent \\ __MODULE__)
+
+  def copy!(from_pid, to_pid, agent) when is_pid(from_pid) and is_pid(to_pid) do
+    copy(from_pid, to_pid, agent)
     |> case do
-      nil -> raise("copy/2 expected overrides for pid: #{inspect(from_pid)}, but none found")
+      nil -> raise("copy!/2 expected overrides for pid: #{inspect(from_pid)}, but none found")
       _overrides -> :ok
     end
   end
