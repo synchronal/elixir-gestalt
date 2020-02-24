@@ -85,6 +85,28 @@ defmodule Gestalt do
   end
 
   @doc ~S"""
+  Copy Gestalt overrides from one pid to another.
+  """
+  def copy(from_pid, to_pid, agent \\ __MODULE__)
+
+  def copy(from_pid, to_pid, agent) when is_pid(from_pid) and is_pid(to_pid) do
+    case GenServer.whereis(agent) do
+      nil ->
+        raise "agent not started, please call start() before changing state"
+
+      _ ->
+        Agent.get_and_update(agent, fn state ->
+          overrides = get_in(state, [from_pid])
+          {overrides, state |> Map.put(to_pid, overrides)}
+        end)
+    end
+    |> case do
+      nil -> raise("copy/2 expected overrides for pid: #{inspect(from_pid)}, but none found")
+      _overrides -> :ok
+    end
+  end
+
+  @doc ~S"""
   Gets configuration either from Application, or from the running agent.
 
   ## Examples
