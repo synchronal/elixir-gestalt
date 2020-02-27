@@ -207,3 +207,75 @@ defmodule Project.Config do
   end
 end
 ``` 
+
+## Acceptance tests
+
+Acceptance tests often involve multiple processes. Wallaby, for instance, starts a Phoenix server, which processes
+requests in separate processes. In this case, `self()` in the context of the test process will be different from
+`self()` in the server process.
+
+This can by solved with the `Gestalt.copy/2` function, in a test plug.
+
+If the `test` Mix env includes `test/support` in its elixir paths, then a plug can be written in
+`test/support/test/plug/gestalt.ex`
+
+```elixir
+defmodule ProjectWeb.Test.Plug.Gestalt do
+  alias Plug.Conn
+
+  def init(_), do: nil
+
+  def call(conn, _opts),
+    do:
+      conn
+      |> extract_metadata()
+      |> copy_overrides(conn)
+
+  defp extract_metadata(%Conn{} = conn),
+    do:
+      conn
+      |> Conn.get_req_header("user-agent")
+      |> List.first()
+      |> Phoenix.Ecto.SQL.Sandbox.decode_metadata()
+
+  defp copy_overrides(%{gestalt_pid: gestalt_pid}, conn) do
+    Gestalt.copy(gestalt_pid, self())
+    conn
+  end
+
+  defp copy_overrides(_metadata, conn), do: conn
+end
+```
+
+This can then be added to the Phoenix Endpoint:
+
+```elixir
+defmodule ProjectWeb.Endpoint do
+  use Phoenix.Endpoint, otp_app: :my_project
+
+  if Application.get_env(:my_project, :sql_sandbox) do
+    plug(Phoenix.Ecto.SQL.Sandbox)
+    plug(ProjectWeb.Test.Plug.Gestalt)
+  end
+  
+  # ....
+end
+```
+
+In the `CaseTemplate` used for your acceptance tests, the following can then be configured (if using Wallaby):
+
+```elixir
+  setup tags do
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Project.Repo)
+    unless tags[:async], do: Ecto.Adapters.SQL.Sandbox.mode(Project.Repo, {:shared, self()})
+
+    # Add the :gestalt_pid test process pid to the metadata being passed through each acceptance request header
+    metadata = Phoenix.Ecto.SQL.Sandbox.metadata_for(Project.Repo, self()) |> Map.put(:gestalt_pid, self())
+    {:ok, session} = Wallaby.start_session(metadata: metadata)
+    {:ok, session: session}
+  end
+```
+
+Now, any overrides configured for the test process will be copied onto the server process pid, and
+`Gestalt.get_config/3` or `Gestalt.get_env/2` will have your overrides available.
+ 
