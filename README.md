@@ -1,6 +1,8 @@
 Gestalt
 =======
 
+[![CircleCI](https://circleci.com/gh/livinginthepast/elixir-gestalt.svg?style=shield)](https://circleci.com/gh/livinginthepast/elixir-gestalt)
+
 `Configuration` → `Form` → `Gestalt`
 
 A wrapper for `Application.get_config` and `System.get_env` that makes it easy
