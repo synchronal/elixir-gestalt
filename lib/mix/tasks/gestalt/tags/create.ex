@@ -1,4 +1,4 @@
-defmodule Mix.Tasks.Git.Tags.Create do
+defmodule Mix.Tasks.Gestalt.Tags.Create do
   @moduledoc false
 
   use Mix.Task
