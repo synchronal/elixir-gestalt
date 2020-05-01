@@ -16,7 +16,7 @@ This package can be installed by adding `gestalt` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:gestalt, "~> 0.1.0"}
+    {:gestalt, "~> 0.3"}
   ]
 end
 ```

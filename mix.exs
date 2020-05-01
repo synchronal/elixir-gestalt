@@ -16,7 +16,7 @@ defmodule Gestalt.MixProject do
       ],
       elixir: "~> 1.6",
       package: package(),
-      source_url: "https://github.com/sparta-science/elixir-gestalt",
+      source_url: "https://github.com/livinginthepast/elixir-gestalt",
       start_permanent: Mix.env() == :prod,
       version: @version
     ]
@@ -29,7 +29,7 @@ defmodule Gestalt.MixProject do
 
   defp aliases do
     [
-      "hex.publish": ["git.tags.create", "git.tags.push", "hex.publish"]
+      "hex.publish": ["gestalt.tags.create", "gestalt.tags.push", "hex.publish"]
     ]
   end
 
@@ -58,7 +58,7 @@ defmodule Gestalt.MixProject do
     [
       licenses: ["MIT"],
       maintainers: ["Eric Saxby"],
-      links: %{"GitHub" => "https://github.com/sparta-science/elixir-gestalt"}
+      links: %{"GitHub" => "https://github.com/livinginthepast/elixir-gestalt"}
     ]
   end
 end
