@@ -73,7 +73,7 @@ defmodule GestaltTest do
       Agent.stop(agent)
     end
 
-    test "uses the running agent if there is a pid override" do
+    test "uses the running agent if there is a pid override and the key exists" do
       pid = self()
       {:ok, agent} = Gestalt.start(:get_config_value_with_override)
 
@@ -86,7 +86,20 @@ defmodule GestaltTest do
       Agent.stop(agent)
     end
 
-    test "does not use Application if agent override is set" do
+    test "uses the running agent if there is a pid override and the key exists and the value is nil" do
+      pid = self()
+      {:ok, agent} = Gestalt.start(:get_config_value_with_override)
+
+      Agent.update(:get_config_value_with_override, fn state ->
+        Map.put(state, pid, configuration: %{gestalt: %{boolean_true: nil}})
+      end)
+
+      assert Gestalt.get_config(:gestalt, :boolean_true, pid, :get_config_value_with_override) == nil
+
+      Agent.stop(agent)
+    end
+
+    test "uses Application if there is a pid override but the key is not present" do
       pid = self()
       {:ok, agent} = Gestalt.start(:get_config_value_with_override)
 
@@ -94,7 +107,7 @@ defmodule GestaltTest do
         Map.put(state, pid, configuration: %{module: %{key: "value"}})
       end)
 
-      assert Gestalt.get_config(:gestalt, :boolean_true, pid, :get_config_value_with_override) == nil
+      assert Gestalt.get_config(:gestalt, :boolean_true, pid, :get_config_value_with_override) == true
 
       Agent.stop(agent)
     end
@@ -127,7 +140,7 @@ defmodule GestaltTest do
       Agent.stop(agent)
     end
 
-    test "uses the running agent if there is a pid override" do
+    test "uses the running agent if there is a pid override and the key exists" do
       pid = self()
       {:ok, agent} = Gestalt.start(:get_env_value_with_override)
 
@@ -142,7 +155,22 @@ defmodule GestaltTest do
       Agent.stop(agent)
     end
 
-    test "does not use System if agent override is set" do
+    test "uses the running agent if there is a pid override and the key exists and the value is an empty string" do
+      pid = self()
+      {:ok, agent} = Gestalt.start(:get_env_value_with_override)
+
+      System.put_env("VARIABLE_OVERRIDE", "i am from the system")
+
+      Agent.update(:get_env_value_with_override, fn state ->
+        Map.put(state, pid, env: %{"VARIABLE_OVERRIDE" => ""})
+      end)
+
+      assert Gestalt.get_env("VARIABLE_OVERRIDE", pid, :get_env_value_with_override) == ""
+
+      Agent.stop(agent)
+    end
+
+    test "uses System if there is a pid override but the key is not present" do
       pid = self()
       {:ok, agent} = Gestalt.start(:get_env_value_with_override)
 
@@ -152,7 +180,7 @@ defmodule GestaltTest do
         Map.put(state, pid, env: %{"OTHER_VARIABLE_OVERRIDE" => "i am overridden"})
       end)
 
-      assert Gestalt.get_env("VARIABLE_OVERRIDE", pid, :get_env_value_with_override) == nil
+      assert Gestalt.get_env("VARIABLE_OVERRIDE", pid, :get_env_value_with_override) == "i am from the system"
 
       Agent.stop(agent)
     end

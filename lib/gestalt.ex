@@ -231,8 +231,14 @@ defmodule Gestalt do
   defp get_agent_config(agent, caller_pid, module, key) do
     Agent.get(agent, fn state ->
       case get_in(state, [caller_pid, :configuration]) do
-        nil -> Application.get_env(module, key)
-        override -> get_in(override, [module, key])
+        nil ->
+          Application.get_env(module, key)
+
+        override ->
+          case Map.has_key?(override, module) && Map.has_key?(override[module], key) do
+            false -> Application.get_env(module, key)
+            true -> get_in(override, [module, key])
+          end
       end
     end)
   end
@@ -240,8 +246,14 @@ defmodule Gestalt do
   defp get_agent_env(agent, caller_pid, variable) when is_binary(variable) do
     Agent.get(agent, fn state ->
       case get_in(state, [caller_pid, :env]) do
-        nil -> System.get_env(variable)
-        override -> override[variable]
+        nil ->
+          System.get_env(variable)
+
+        override ->
+          case Map.has_key?(override, variable) do
+            false -> System.get_env(variable)
+            true -> override[variable]
+          end
       end
     end)
   end
