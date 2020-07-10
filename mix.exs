@@ -1,7 +1,7 @@
 defmodule Gestalt.MixProject do
   use Mix.Project
 
-  @version "0.3.1"
+  @version "1.0.0"
 
   def project do
     [
