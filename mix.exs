@@ -56,7 +56,7 @@ defmodule Gestalt.MixProject do
 
   defp package() do
     [
-      licenses: ["MIT"],
+      licenses: ["Apache"],
       maintainers: ["Eric Saxby"],
       links: %{"GitHub" => "https://github.com/livinginthepast/elixir-gestalt"}
     ]
