@@ -9,7 +9,7 @@ defmodule Gestalt.MixProject do
       app: :gestalt,
       deps: deps(),
       description: description(),
-      dialyzer: [plt_add_apps: [:mix]],
+      dialyzer: dialyzer(),
       docs: [
         extras: extras(),
         source_ref: "v#{@version}",
@@ -55,6 +55,13 @@ defmodule Gestalt.MixProject do
     to swap in process-specific overrides. Among other things, this allows tests
     to provide async-safe overrides.
     """
+  end
+
+  defp dialyzer do
+    [
+      plt_add_apps: [:ex_unit, :mix],
+      plt_add_deps: :app_tree
+    ]
   end
 
   defp extras() do
