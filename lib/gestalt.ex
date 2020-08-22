@@ -91,19 +91,16 @@ defmodule Gestalt do
   def copy(from_pid, to_pid, agent \\ __MODULE__)
 
   def copy(from_pid, to_pid, agent) when is_pid(from_pid) and is_pid(to_pid) do
-    case GenServer.whereis(agent) do
-      nil ->
-        raise "agent not started, please call start() before changing state"
+    unless GenServer.whereis(agent),
+      do: raise("agent not started, please call start() before changing state")
 
-      _ ->
-        Agent.get_and_update(agent, fn state ->
-          get_in(state, [from_pid])
-          |> case do
-            nil -> {nil, state}
-            overrides -> {overrides, state |> Map.put(to_pid, overrides)}
-          end
-        end)
-    end
+    Agent.get_and_update(agent, fn state ->
+      get_in(state, [from_pid])
+      |> case do
+        nil -> {nil, state}
+        overrides -> {overrides, state |> Map.put(to_pid, overrides)}
+      end
+    end)
   end
 
   @doc ~S"""
@@ -230,31 +227,33 @@ defmodule Gestalt do
 
   defp get_agent_config(agent, caller_pid, module, key) do
     Agent.get(agent, fn state ->
-      case get_in(state, [caller_pid, :configuration]) do
-        nil ->
-          Application.get_env(module, key)
-
-        override ->
-          case Map.has_key?(override, module) && Map.has_key?(override[module], key) do
-            false -> Application.get_env(module, key)
-            true -> get_in(override, [module, key])
-          end
-      end
+      get_in(state, [caller_pid, :configuration])
     end)
+    |> case do
+      nil ->
+        Application.get_env(module, key)
+
+      override ->
+        case Map.has_key?(override, module) && Map.has_key?(override[module], key) do
+          false -> Application.get_env(module, key)
+          true -> get_in(override, [module, key])
+        end
+    end
   end
 
   defp get_agent_env(agent, caller_pid, variable) when is_binary(variable) do
     Agent.get(agent, fn state ->
-      case get_in(state, [caller_pid, :env]) do
-        nil ->
-          System.get_env(variable)
-
-        override ->
-          case Map.has_key?(override, variable) do
-            false -> System.get_env(variable)
-            true -> override[variable]
-          end
-      end
+      get_in(state, [caller_pid, :env])
     end)
+    |> case do
+      nil ->
+        System.get_env(variable)
+
+      override ->
+        case Map.has_key?(override, variable) do
+          false -> System.get_env(variable)
+          true -> override[variable]
+        end
+    end
   end
 end

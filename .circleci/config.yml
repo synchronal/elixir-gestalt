@@ -20,6 +20,9 @@ jobs:
           name: Run tests
           command: mix test
       - run:
+          name: Run Credo
+          command: mix credo
+      - run:
           name: "Verify results.xml"
           command: |
             mkdir -p /tmp/test-results
