@@ -132,6 +132,8 @@ defmodule Gestalt do
       false
 
   """
+  @spec get_config(atom(), any(), pid()) :: any()
+  @spec get_config(atom(), any(), pid(), module()) :: any()
   def get_config(_module, _key, _pid, _agent \\ __MODULE__)
 
   def get_config(module, key, pid, agent) when is_pid(pid) do
@@ -158,6 +160,8 @@ defmodule Gestalt do
       "no longer from env"
 
   """
+  @spec get_env(String.t(), pid()) :: any()
+  @spec get_env(String.t(), pid(), module()) :: any()
   def get_env(_variable, _pid, _agent \\ __MODULE__)
 
   def get_env(variable, pid, agent) when is_pid(pid) do
@@ -176,6 +180,8 @@ defmodule Gestalt do
   @doc ~S"""
   Sets an override for the provided pid, effecting the behavior of `get_config/4`.
   """
+  @spec replace_config(atom(), any(), any(), pid()) :: :ok
+  @spec replace_config(atom(), any(), any(), pid(), module()) :: :ok
   def replace_config(_module, _key, _value, _pid, _agent \\ __MODULE__)
 
   def replace_config(module, key, value, pid, agent) when is_pid(pid) do
@@ -201,6 +207,8 @@ defmodule Gestalt do
   @doc ~S"""
   Sets an override for the provided pid, effecting the behavior of `get_env/3`.
   """
+  @spec replace_env(String.t(), any(), pid()) :: :ok
+  @spec replace_env(String.t(), any(), pid(), module()) :: :ok
   def replace_env(_variable, _value, _pid, _agent \\ __MODULE__)
 
   def replace_env(variable, value, pid, agent) when is_pid(pid) do
