@@ -9,6 +9,7 @@ defmodule Gestalt.MixProject do
       app: :gestalt,
       deps: deps(),
       description: description(),
+      dialyzer: [plt_add_apps: [:mix]],
       docs: [
         extras: extras(),
         source_ref: "v#{@version}",
@@ -29,7 +30,13 @@ defmodule Gestalt.MixProject do
 
   defp aliases do
     [
-      "hex.publish": ["gestalt.tags.create", "gestalt.tags.push", "hex.publish"]
+      "hex.publish": [
+        "credo",
+        "dialyzer --quiet --format short",
+        "gestalt.tags.create",
+        "gestalt.tags.push",
+        "hex.publish"
+      ]
     ]
   end
 

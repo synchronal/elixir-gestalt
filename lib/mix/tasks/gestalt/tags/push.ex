@@ -4,6 +4,7 @@ defmodule Mix.Tasks.Gestalt.Tags.Push do
   use Mix.Task
 
   @shortdoc "Pushes all git tags"
+  @impl Mix.Task
   def run([]) do
     Mix.Shell.IO.cmd(command() |> Enum.join(" "))
   end

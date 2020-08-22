@@ -4,6 +4,7 @@ defmodule Mix.Tasks.Gestalt.Tags.Create do
   use Mix.Task
 
   @shortdoc "Creates a git tag"
+  @impl Mix.Task
   def run([]) do
     start_app!()
 
