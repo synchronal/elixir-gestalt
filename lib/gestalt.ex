@@ -57,6 +57,9 @@ defmodule Gestalt do
 
   alias Gestalt.Util
 
+  @type agent :: pid() | atom()
+
+  @spec __using__(any()) :: Macro.t()
   defmacro __using__(_) do
     quote do
       import Gestalt.Macros
@@ -77,6 +80,7 @@ defmodule Gestalt do
       true
 
   """
+  @spec start(agent()) :: {:ok, pid()}
   def start(agent \\ __MODULE__) do
     case GenServer.whereis(agent) do
       nil -> Agent.start_link(fn -> %{} end, name: agent)
@@ -88,6 +92,7 @@ defmodule Gestalt do
   Copies Gestalt overrides from one pid to another. If no overrides have been defined,
   returns `nil`.
   """
+  @spec copy(pid(), pid(), agent()) :: nil | map()
   def copy(from_pid, to_pid, agent \\ __MODULE__)
 
   def copy(from_pid, to_pid, agent) when is_pid(from_pid) and is_pid(to_pid) do
@@ -107,6 +112,7 @@ defmodule Gestalt do
   Copies Gestalt overrides from one pid to another. If no overrides have been defined,
   raises a RuntimeError.
   """
+  @spec copy!(pid(), pid(), agent()) :: :ok
   def copy!(from_pid, to_pid, agent \\ __MODULE__)
 
   def copy!(from_pid, to_pid, agent) when is_pid(from_pid) and is_pid(to_pid) do
@@ -133,7 +139,8 @@ defmodule Gestalt do
 
   """
   @spec get_config(atom(), any(), pid()) :: any()
-  @spec get_config(atom(), any(), pid(), module()) :: any()
+  @spec get_config(atom(), any(), pid(), agent()) :: any()
+  @spec get_config(atom(), any(), atom(), agent()) :: none()
   def get_config(_module, _key, _pid, _agent \\ __MODULE__)
 
   def get_config(module, key, pid, agent) when is_pid(pid) do

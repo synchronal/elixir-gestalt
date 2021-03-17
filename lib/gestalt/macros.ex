@@ -17,26 +17,28 @@ defmodule Gestalt.Macros do
       end
   """
 
+  @spec gestalt_config(module(), atom(), pid()) :: Macro.t()
   defmacro gestalt_config(module, key, pid) do
     if Mix.env() == :test do
-      quote do
+      quote location: :keep do
         Gestalt.get_config(unquote(module), unquote(key), unquote(pid))
       end
     else
-      quote do
+      quote location: :keep do
         unquote(pid) &&
           Application.get_env(unquote(module), unquote(key))
       end
     end
   end
 
+  @spec gestalt_env(binary(), pid()) :: Macro.t()
   defmacro gestalt_env(variable, pid) do
     if Mix.env() == :test do
-      quote do
+      quote location: :keep do
         Gestalt.get_env(unquote(variable), unquote(pid))
       end
     else
-      quote do
+      quote location: :keep do
         unquote(pid) &&
           System.get_env(unquote(variable))
       end
