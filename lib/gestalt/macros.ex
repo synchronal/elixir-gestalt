@@ -25,8 +25,8 @@ defmodule Gestalt.Macros do
       end
     else
       quote location: :keep do
-        unquote(pid) &&
-          Application.get_env(unquote(module), unquote(key))
+        unquote(pid)
+        Application.get_env(unquote(module), unquote(key))
       end
     end
   end
@@ -39,8 +39,8 @@ defmodule Gestalt.Macros do
       end
     else
       quote location: :keep do
-        unquote(pid) &&
-          System.get_env(unquote(variable))
+        unquote(pid)
+        System.get_env(unquote(variable))
       end
     end
   end
