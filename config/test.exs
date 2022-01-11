@@ -1,4 +1,4 @@
-use Mix.Config
+import Config
 
 config :gestalt, :boolean_true, true
 config :gestalt, :boolean_false, false

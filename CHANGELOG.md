@@ -1,6 +1,11 @@
 Change Log
 ==========
 
+## Unreleased
+
+* Bump required Elixir version to `~> 1.9`
+* Use `Config` in favor of deprecated `Mix.Config`
+
 ## 1.0.2
 
 * Fix dialyzer error when analyzing an application using Gestalt in

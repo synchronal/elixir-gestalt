@@ -15,7 +15,7 @@ defmodule Gestalt.MixProject do
         source_ref: "v#{@version}",
         main: "overview"
       ],
-      elixir: "~> 1.6",
+      elixir: "~> 1.9",
       package: package(),
       preferred_cli_env: [credo: :test, dialyzer: :test],
       source_url: "https://github.com/livinginthepast/elixir-gestalt",
