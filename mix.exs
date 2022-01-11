@@ -17,6 +17,7 @@ defmodule Gestalt.MixProject do
       ],
       elixir: "~> 1.6",
       package: package(),
+      preferred_cli_env: [credo: :test, dialyzer: :test],
       source_url: "https://github.com/livinginthepast/elixir-gestalt",
       start_permanent: Mix.env() == :prod,
       version: @version

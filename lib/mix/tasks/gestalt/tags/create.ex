@@ -25,11 +25,11 @@ defmodule Mix.Tasks.Gestalt.Tags.Create do
     ]
   end
 
-  defp description() do
+  defp description do
     Mix.Shell.IO.prompt("Please enter a tag message:")
   end
 
-  defp tag() do
+  defp tag do
     {:ok, version} = :application.get_key(:gestalt, :vsn)
     "v#{version}"
   end
