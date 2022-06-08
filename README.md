@@ -1,7 +1,9 @@
 Gestalt
 =======
 
-[![CircleCI](https://circleci.com/gh/livinginthepast/elixir-gestalt.svg?style=shield)](https://circleci.com/gh/livinginthepast/elixir-gestalt)
+[![CI](https://github.com/livinginthepast/elixir-gestalt/actions/workflows/tests.yml/badge.svg)](https://github.com/livinginthepast/elixir-gestalt/actions)
+[![Hex pm](http://img.shields.io/hexpm/v/gestalt.svg?style=flat)](https://hex.pm/packages/gestalt)
+[![License](http://img.shields.io/github/license/livinginthepast/elixir-gestalt.svg?style=flat)](https://github.com/livinginthepast/elixir-gestalt/blob/main/LICENSE.md)
 
 `Configuration` → `Form` → `Gestalt`
 
@@ -18,7 +20,7 @@ This package can be installed by adding `gestalt` to your list of dependencies i
 ```elixir
 def deps do
   [
-    {:gestalt, "~> 0.3"}
+    {:gestalt, "~> 1.0"}
   ]
 end
 ```
