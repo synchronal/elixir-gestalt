@@ -3,6 +3,9 @@ Change Log
 
 ## Unreleased
 
+
+## 1.0.3
+
 - Bump required Elixir version to `~> 1.9`
 - Use `Config` in favor of deprecated `Mix.Config`
 - Add LiveView section to guides
