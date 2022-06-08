@@ -46,7 +46,8 @@ defmodule Gestalt.MixProject do
       {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev},
-      {:junit_formatter, ">= 0.0.0", only: :test}
+      {:mix_audit, "~> 1.0", only: :dev, runtime: false}
+
     ]
   end
 
