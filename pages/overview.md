@@ -208,6 +208,7 @@ defmodule Project.Config do
 end
 ``` 
 
+
 ## Acceptance tests
 
 Acceptance tests often involve multiple processes. Wallaby, for instance, starts a Phoenix server, which processes
@@ -265,17 +266,56 @@ end
 In the `CaseTemplate` used for your acceptance tests, the following can then be configured (if using Wallaby):
 
 ```elixir
-  setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Project.Repo)
-    unless tags[:async], do: Ecto.Adapters.SQL.Sandbox.mode(Project.Repo, {:shared, self()})
+setup tags do
+  :ok = Ecto.Adapters.SQL.Sandbox.checkout(Project.Repo)
+  unless tags[:async], do: Ecto.Adapters.SQL.Sandbox.mode(Project.Repo, {:shared, self()})
 
-    # Add the :gestalt_pid test process pid to the metadata being passed through each acceptance request header
-    metadata = Phoenix.Ecto.SQL.Sandbox.metadata_for(Project.Repo, self()) |> Map.put(:gestalt_pid, self())
-    {:ok, session} = Wallaby.start_session(metadata: metadata)
-    {:ok, session: session}
-  end
+  # Add the :gestalt_pid test process pid to the metadata being passed through each acceptance request header
+  metadata = Phoenix.Ecto.SQL.Sandbox.metadata_for(Project.Repo, self()) |> Map.put(:gestalt_pid, self())
+  {:ok, session} = Wallaby.start_session(metadata: metadata)
+  {:ok, session: session}
+end
 ```
 
 Now, any overrides configured for the test process will be copied onto the server process pid, and
 `Gestalt.get_config/3` or `Gestalt.get_env/2` will have your overrides available.
- 
+
+
+## LiveView tests
+
+LiveView tests can be configured to share the Gestalt configuration via `Phoenix.LiveView.on_mount/1`.
+In the test, the current pid should be added to the `conn`'s session.
+
+```elixir
+Phoenix.ConnTest.init_test_session(conn, %{gestalt_pid: self()})
+{:ok, _live, _html} = live(conn, "/")
+```
+
+The LiveView can run an `on_mount` handler to copy configuration for the socket's pid.
+
+```elixir
+defmodule Web.Gestalt do
+  def on_mount(:copy_gestalt_config, _params, %{"gestalt_pid" => gestalt_pid}, socket) do
+    Gestalt.copy(gestalt_pid, self())
+    {:cont, socket}
+  end
+
+  def on_mount(:copy_gestalt_config, _params, _session, socket) do
+    {:cont, socket}
+  end
+end
+```
+
+```elixir
+module Web.MyLive do
+  use Web, :live_view
+
+  on_mount {Web.Gestalt, :copy_gestalt_config}
+
+  def render(assigns) do
+    ~H"<div />"
+  end
+
+  def mount(_params, _session, socket), do: {:ok, socket}
+end
+```
