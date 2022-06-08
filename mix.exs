@@ -47,7 +47,6 @@ defmodule Gestalt.MixProject do
       {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:mix_audit, "~> 1.0", only: :dev, runtime: false}
-
     ]
   end
 
@@ -62,7 +61,8 @@ defmodule Gestalt.MixProject do
   defp dialyzer do
     [
       plt_add_apps: [:ex_unit, :mix],
-      plt_add_deps: :app_tree
+      plt_add_deps: :app_tree,
+      plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
     ]
   end
 
