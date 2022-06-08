@@ -1,6 +1,7 @@
 *.ez
 *.iml
-.tool-versions
+.medic/.doctor.out
+.medic/skipped
 /.fetch
 /_build/
 /cover/
