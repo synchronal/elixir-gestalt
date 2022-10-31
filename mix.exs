@@ -74,9 +74,10 @@ defmodule Gestalt.MixProject do
 
   defp package() do
     [
+      files: ~w(lib .formatter.exs mix.exs README* LICENSE* CHANGELOG* src),
       licenses: ["Apache"],
-      maintainers: ["Eric Saxby"],
-      links: %{"GitHub" => "https://github.com/livinginthepast/elixir-gestalt"}
+      links: %{"GitHub" => "https://github.com/livinginthepast/elixir-gestalt"},
+      maintainers: ["Eric Saxby"]
     ]
   end
 end
