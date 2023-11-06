@@ -393,14 +393,14 @@ defmodule GestaltTest do
       refute GenServer.whereis(:copy_env_no_agent)
 
       assert_raise RuntimeError, "agent not started, please call start() before changing state", fn ->
-        Gestalt.copy(self(), :erlang.list_to_pid('<0.1.0>'), :copy_env_no_agent)
+        Gestalt.copy(self(), :erlang.list_to_pid(~c"<0.1.0>"), :copy_env_no_agent)
       end
     end
 
     test "does nothing when no overrides exist for the source pid" do
       {:ok, agent} = Agent.start_link(fn -> %{} end, name: :copy_env_without_overrides)
 
-      Gestalt.copy(self(), :erlang.list_to_pid('<0.1.0>'), :copy_env_without_overrides)
+      Gestalt.copy(self(), :erlang.list_to_pid(~c"<0.1.0>"), :copy_env_without_overrides)
       assert Agent.get(:copy_env_without_overrides, fn state -> state end) == %{}
 
       Agent.stop(agent)
@@ -413,7 +413,7 @@ defmodule GestaltTest do
       Gestalt.replace_env("ENV_VAR", "overridden value", self(), :copy_env)
       Gestalt.replace_config(:something, :key, true, self(), :copy_env)
 
-      other_pid = :erlang.list_to_pid('<0.1.0>')
+      other_pid = :erlang.list_to_pid(~c"<0.1.0>")
       Gestalt.copy(pid, other_pid, :copy_env)
 
       assert Agent.get(:copy_env, fn state -> state end) == %{
@@ -436,7 +436,7 @@ defmodule GestaltTest do
       refute GenServer.whereis(:copy_env_no_agent)
 
       assert_raise RuntimeError, "agent not started, please call start() before changing state", fn ->
-        Gestalt.copy!(self(), :erlang.list_to_pid('<0.1.0>'), :copy_env_no_agent)
+        Gestalt.copy!(self(), :erlang.list_to_pid(~c"<0.1.0>"), :copy_env_no_agent)
       end
     end
 
@@ -445,7 +445,7 @@ defmodule GestaltTest do
       {:ok, agent} = Agent.start_link(fn -> %{} end, name: :copy_env_without_overrides)
 
       assert_raise RuntimeError, "copy!/2 expected overrides for pid: #{inspect(pid)}, but none found", fn ->
-        Gestalt.copy!(pid, :erlang.list_to_pid('<0.1.0>'), :copy_env_without_overrides)
+        Gestalt.copy!(pid, :erlang.list_to_pid(~c"<0.1.0>"), :copy_env_without_overrides)
       end
 
       Agent.stop(agent)
@@ -458,7 +458,7 @@ defmodule GestaltTest do
       Gestalt.replace_env("ENV_VAR", "overridden value", self(), :copy_env)
       Gestalt.replace_config(:something, :key, true, self(), :copy_env)
 
-      other_pid = :erlang.list_to_pid('<0.1.0>')
+      other_pid = :erlang.list_to_pid(~c"<0.1.0>")
       Gestalt.copy!(pid, other_pid, :copy_env)
 
       assert Agent.get(:copy_env, fn state -> state end) == %{
