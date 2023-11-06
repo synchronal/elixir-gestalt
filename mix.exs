@@ -10,15 +10,10 @@ defmodule Gestalt.MixProject do
       deps: deps(),
       description: description(),
       dialyzer: dialyzer(),
-      docs: [
-        extras: extras(),
-        source_ref: "v#{@version}",
-        main: "overview"
-      ],
+      docs: docs(),
       elixir: "~> 1.9",
       package: package(),
-      preferred_cli_env: [credo: :test, dialyzer: :test],
-      source_url: "https://github.com/livinginthepast/elixir-gestalt",
+      source_url: "https://github.com/synchronal/elixir-gestalt",
       start_permanent: Mix.env() == :prod,
       version: @version
     ]
@@ -29,8 +24,15 @@ defmodule Gestalt.MixProject do
     [extra_applications: [:logger]]
   end
 
-  defp aliases do
-    [
+  def cli,
+    do: [
+      preferred_envs: [credo: :test, dialyzer: :test]
+    ]
+
+  # # #
+
+  defp aliases,
+    do: [
       "hex.publish": [
         "credo",
         "dialyzer --quiet --format short",
@@ -39,16 +41,14 @@ defmodule Gestalt.MixProject do
         "hex.publish"
       ]
     ]
-  end
 
-  defp deps do
-    [
+  defp deps,
+    do: [
       {:credo, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false},
       {:ex_doc, ">= 0.0.0", only: :dev},
       {:mix_audit, "~> 2.0", only: :dev, runtime: false}
     ]
-  end
 
   defp description() do
     """
@@ -58,13 +58,19 @@ defmodule Gestalt.MixProject do
     """
   end
 
-  defp dialyzer do
-    [
+  defp dialyzer,
+    do: [
       plt_add_apps: [:ex_unit, :mix],
       plt_add_deps: :app_tree,
       plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
     ]
-  end
+
+  defp docs,
+    do: [
+      extras: extras(),
+      source_ref: "v#{@version}",
+      main: "overview"
+    ]
 
   defp extras() do
     [
@@ -72,12 +78,11 @@ defmodule Gestalt.MixProject do
     ]
   end
 
-  defp package() do
-    [
+  defp package(),
+    do: [
       files: ~w(lib .formatter.exs mix.exs README* LICENSE* CHANGELOG* src),
       licenses: ["Apache"],
-      links: %{"GitHub" => "https://github.com/livinginthepast/elixir-gestalt"},
-      maintainers: ["Eric Saxby"]
+      links: %{"GitHub" => "https://github.com/synchronal/elixir-gestalt"},
+      maintainers: ["synchronal.dev", "Eric Saxby"]
     ]
-  end
 end
