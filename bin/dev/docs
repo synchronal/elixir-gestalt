@@ -2,8 +2,8 @@
 
 set -e
 
-source ".medic/_support/cecho.sh"
-source ".medic/_support/step.sh"
+source "$(brew --prefix)/share/medic-bash/cecho.bash"
+source "$(brew --prefix)/share/medic-bash/step.bash"
 
 step_with_output "Generating docs" "mix docs"
 open doc/index.html

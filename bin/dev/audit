@@ -2,7 +2,4 @@
 
 set -exo pipefail
 
-mix credo --strict
-mix dialyzer
-mix deps.audit
-mix deps.unlock --check-unused
+medic audit

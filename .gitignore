@@ -8,5 +8,6 @@
 /deps/
 /doc/
 /priv/plts/
+Brewfile.lock.json
 erl_crash.dump
 gestalt-*.tar
