@@ -25,6 +25,11 @@ checks = [
   { check = "elixir", command = "unused-deps" },
 ]
 
+[outdated]
+checks = [
+  { check = "elixir" },
+]
+
 [update]
 steps = [
   { step = "git", command = "pull" },
