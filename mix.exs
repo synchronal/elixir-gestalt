@@ -54,7 +54,8 @@ defmodule Gestalt.MixProject do
     do: [
       plt_add_apps: [:ex_unit, :mix],
       plt_add_deps: :app_tree,
-      plt_file: {:no_warn, "priv/plts/dialyzer.plt"}
+      plt_core_path: "_build/plts/#{Mix.env()}",
+      plt_local_path: "_build/plts/#{Mix.env()}"
     ]
 
   defp docs,
@@ -72,7 +73,7 @@ defmodule Gestalt.MixProject do
 
   defp package(),
     do: [
-      files: ~w(lib .formatter.exs mix.exs README* LICENSE* CHANGELOG* src),
+      files: ~w(lib .formatter.exs mix.exs README* LICENSE* CHANGELOG* pages),
       licenses: ["Apache"],
       links: %{"GitHub" => "https://github.com/synchronal/elixir-gestalt"},
       maintainers: ["synchronal.dev", "Eric Saxby"]
