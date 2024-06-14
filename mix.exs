@@ -32,15 +32,7 @@ defmodule Gestalt.MixProject do
   # # #
 
   defp aliases,
-    do: [
-      "hex.publish": [
-        "credo",
-        "dialyzer --quiet --format short",
-        "gestalt.tags.create",
-        "gestalt.tags.push",
-        "hex.publish"
-      ]
-    ]
+    do: []
 
   defp deps,
     do: [
