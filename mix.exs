@@ -11,7 +11,7 @@ defmodule Gestalt.MixProject do
       description: description(),
       dialyzer: dialyzer(),
       docs: docs(),
-      elixir: "~> 1.9",
+      elixir: "~> 1.15",
       package: package(),
       source_url: "https://github.com/synchronal/elixir-gestalt",
       start_permanent: Mix.env() == :prod,
