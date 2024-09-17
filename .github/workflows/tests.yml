@@ -9,7 +9,7 @@ on:
     branches:
       - main
 env:
-  ELIXIR_VERSION: "1.17.0"
+  ELIXIR_VERSION: "1.17.2"
   OTP_VERSION: "27.0"
 jobs:
   build_test:
