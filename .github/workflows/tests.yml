@@ -8,11 +8,18 @@ on:
   pull_request:
     branches:
       - main
-env:
-  ELIXIR_VERSION: "1.17.2"
-  OTP_VERSION: "27.0"
 jobs:
   build_test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pair:
+              elixir: 1.16
+              otp: 25
+          - pair:
+              elixir: 1.18
+              otp: 27
     name: Build Test
     runs-on: ubuntu-24.04
     env:
@@ -23,9 +30,8 @@ jobs:
         id: beam
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-          otp-version: ${{ env.OTP_VERSION }}
-          version-type: strict
+          elixir-version: ${{ matrix.pair.elixir }}
+          otp-version: ${{ matrix.pair.otp }}
       - name: Cache deps
         uses: actions/cache@v4
         with:
@@ -43,6 +49,16 @@ jobs:
         run: mix compile --force --warnings-as-errors
         working-directory: .
   build_dev:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pair:
+              elixir: 1.16
+              otp: 25
+          - pair:
+              elixir: 1.18
+              otp: 27
     name: Build Dev
     runs-on: ubuntu-24.04
     env:
@@ -53,9 +69,8 @@ jobs:
         id: beam
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-          otp-version: ${{ env.OTP_VERSION }}
-          version-type: strict
+          elixir-version: ${{ matrix.pair.elixir }}
+          otp-version: ${{ matrix.pair.otp }}
       - name: Cache deps
         uses: actions/cache@v4
         with:
@@ -73,6 +88,16 @@ jobs:
         run: mix compile --force --warnings-as-errors
         working-directory: .
   test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pair:
+              elixir: 1.16
+              otp: 25
+          - pair:
+              elixir: 1.18
+              otp: 27
     name: Test
     needs: build_test
     runs-on: ubuntu-24.04
@@ -84,9 +109,8 @@ jobs:
         id: beam
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-          otp-version: ${{ env.OTP_VERSION }}
-          version-type: strict
+          elixir-version: ${{ matrix.pair.elixir }}
+          otp-version: ${{ matrix.pair.otp }}
       - name: Cache deps
         uses: actions/cache@v4
         with:
@@ -101,6 +125,13 @@ jobs:
         run: mix test --color --warnings-as-errors
         working-directory: .
   credo_and_dialyxir:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pair:
+              elixir: 1.18
+              otp: 27
     name: Credo + Dialyxir
     needs: build_test
     runs-on: ubuntu-24.04
@@ -112,9 +143,8 @@ jobs:
         id: beam
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-          otp-version: ${{ env.OTP_VERSION }}
-          version-type: strict
+          elixir-version: ${{ matrix.pair.elixir }}
+          otp-version: ${{ matrix.pair.otp }}
       - name: Cache deps
         uses: actions/cache@v4
         with:
@@ -137,6 +167,13 @@ jobs:
         run: mix dialyzer
         working-directory: .
   audit:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pair:
+              elixir: 1.18
+              otp: 27
     name: Audit
     needs: build_dev
     runs-on: ubuntu-24.04
@@ -148,9 +185,8 @@ jobs:
         id: beam
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-          otp-version: ${{ env.OTP_VERSION }}
-          version-type: strict
+          elixir-version: ${{ matrix.pair.elixir }}
+          otp-version: ${{ matrix.pair.otp }}
       - name: Cache deps
         uses: actions/cache@v4
         with:
@@ -171,6 +207,13 @@ jobs:
         run: mix deps.audit
         working-directory: .
   publish:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - pair:
+              elixir: 1.18
+              otp: 27
     name: Publish to Hex
     if: github.ref == 'refs/heads/main'
     needs:
@@ -184,9 +227,8 @@ jobs:
         id: beam
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: ${{ env.ELIXIR_VERSION }}
-          otp-version: ${{ env.OTP_VERSION }}
-          version-type: strict
+          elixir-version: ${{ matrix.pair.elixir }}
+          otp-version: ${{ matrix.pair.otp }}
       - name: Cache deps
         uses: actions/cache@v4
         with:
