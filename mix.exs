@@ -75,7 +75,10 @@ defmodule Gestalt.MixProject do
     do: [
       files: ~w(lib .formatter.exs mix.exs README* LICENSE* CHANGELOG* pages),
       licenses: ["Apache"],
-      links: %{"GitHub" => "https://github.com/synchronal/elixir-gestalt"},
+      links: %{
+        "GitHub" => "https://github.com/synchronal/elixir-gestalt",
+        "Sponsor" => "https://github.com/sponsors/reflective-dev"
+      },
       maintainers: ["synchronal.dev", "Eric Saxby"]
     ]
 end
